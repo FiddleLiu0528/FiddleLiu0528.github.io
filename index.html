@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Fiddle 金魚腦程式筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Fiddle 金魚腦程式筆記">
+<meta property="og:url" content="https://fiddleliu0528.github.io/index.html">
+<meta property="og:site_name" content="Fiddle 金魚腦程式筆記">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="Fiddle Liu">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Fiddle 金魚腦程式筆記" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Fiddle 金魚腦程式筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://fiddleliu0528.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-net6-mvc-前後端專案整合開發-使用vue" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/" class="article-date">
+  <time class="dt-published" datetime="2022-05-28T10:11:44.000Z" itemprop="datePublished">2022-05-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/">.net6 mvc 前後端專案整合開發(使用vue)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本篇文章的目的是使用.net6 mvc 專案，加上前端框架 vue3 來完成一個前後端整合專案，<br>使專案可前後端分開開發，並且整合前後端專案一起發佈，不需要分開站台進行發佈。<br>最後將專案以容器的方式運行。</p>
+<p>為完整保護網站頁面的安全性，一般來說會採用 SSR 的方式渲染頁面，<br>確保使用者取得的內容，都是經過後端驗證後才提供。<br>但因為大多內容都需請求後端回應或運算顯示結果，<br>相對就會失去一些速度或者效能分散運算的優勢；  </p>
+<p>所以，採用CSR或SSR的方式就需要權衡利弊下，<br>是以安全性還是使用者體驗為優先來決定。  </p>
+<p>這邊採取折衷的方式，在使用者尚未驗證通過之前，<br>不會提供主要頁面功能的靜態資訊給使用者。</p>
+<h1 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h1><p>OS windows 10<br>IDE <a target="_blank" rel="noopener" href="https://visualstudio.microsoft.com/zh-hant/downloads/">Visual Studio 2022</a><br>文字編輯器 <a target="_blank" rel="noopener" href="https://code.visualstudio.com/">Visual Studio Code</a><br>開發者工具 <a target="_blank" rel="noopener" href="https://dotnet.microsoft.com/en-us/download/dotnet/6.0">.net6 SDK</a><br>容器工具 <a target="_blank" rel="noopener" href="https://www.docker.com/products/docker-desktop/">docker desktop</a>  </p>
+<p><em>注意項目：</em>  </p>
+<ol>
+<li>visual studio .net6 必須使用 2022 的版本才可以運行，請用2022進行開發  </li>
+<li>在安裝 Visual Studio 的時候若有勾選網頁開發的話，也會一併安裝.net6的開發者工具SDK  </li>
+<li>docker desktop 需要先註冊帳號</li>
+</ol>
+<h1 id="建立-mvc-專案"><a href="#建立-mvc-專案" class="headerlink" title="建立 mvc 專案"></a>建立 mvc 專案</h1><p>預設的範本採用MVC<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_154254.png" alt="選取 C# MVC 專案"></p>
+<h2 id="建立版本控管"><a href="#建立版本控管" class="headerlink" title="建立版本控管"></a>建立版本控管</h2><p>建立專案之後，通常會先加入本地的版本控管，<br>以方便查看調整的內容比較或退回；<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155111.png" alt="建立版本控管">  </p>
+<h2 id="移除MVC的前端檔案"><a href="#移除MVC的前端檔案" class="headerlink" title="移除MVC的前端檔案"></a>移除MVC的前端檔案</h2><p>由於原先MVC的專案有預設的前端頁面及資源，<br>而我們是採用 vue 的方式進行前端開發，所以這些資源可以被移除<br>可直接將 wwwroot 的資料夾進行移除</p>
+<h2 id="建立前端專案"><a href="#建立前端專案" class="headerlink" title="建立前端專案"></a>建立前端專案</h2><p>在專案底下添加 vue 的前端專案。<br>這邊因為要實作是有登入的後台功能，<br>所以在網頁專案底下建立 ClientAPP資料夾，<br>裏頭再建立了兩個前端專案，分別為 login 以及 main<br>建立後 分別運行前端專案，查看是否可正常運行<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155648.png" alt="前端專案">  </p>
+<h2 id="調整-csproj-檔設定"><a href="#調整-csproj-檔設定" class="headerlink" title="調整 csproj 檔設定"></a>調整 csproj 檔設定</h2><p><a target="_blank" rel="noopener" href="https://github.com/FiddleLiu0528/CoreMvcVuePractice/blob/main/CoreMvcVuePractice/CoreMvcVuePractice.csproj">csproj 設定檔</a>的調整主要目的為：</p>
+<ol>
+<li>增加前端專編譯使用的路徑設定  </li>
+<li>排除大量前端套件於檔案總管內的顯示  </li>
+<li>本地開發獲取前端編譯完成的路徑解析  </li>
+<li>專案發佈檢查前端套件及編譯路徑調整</li>
+</ol>
+<h2 id="後端-controller-與-views-結構調整"><a href="#後端-controller-與-views-結構調整" class="headerlink" title="後端 controller 與 views 結構調整"></a>後端 controller 與 views 結構調整</h2><p>搭配前端專案，controller 與 views 的名稱分別調整為 login 以及 main，<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_163105.png" alt="搭配前端專案名稱調整">  </p>
+<p>後續會實作，當使用者呼叫 main 但沒有權限時，會轉導至login頁面  </p>
+<p>views 頁面的資料，會改成讀前端建置出來的首頁檔<br>預設為index.html，這裡調整名稱為 template 並且沒有附檔名<br>避免使用者可以直接存取。<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164409.png" alt="修改預設首頁名稱為模板">  </p>
+<p>以IO的方式讀取至靜態緩存，並注入到 views 提供給使用者<br>這樣就可以達成將前端頁面轉換為SSR的方式提供  </p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Html.Raw(StaticFrontEndPages.loginPage)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Html.Raw(StaticFrontEndPages.mainPage)</span><br></pre></td></tr></table></figure>
+
+<h2 id="開發與發佈設定"><a href="#開發與發佈設定" class="headerlink" title="開發與發佈設定"></a>開發與發佈設定</h2><p>在本地開發時，雖然大多時候前端都是直接使用 vs code 進行開發<br>但也會有前後端功能需整合測試的情境出現<br>因為當開發與發佈的靜態檔案會有所不同的時候<br>須添加部分設定，讓專案可依照不同的模式調整運行的代碼內容<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164736.png" alt="不同的模式調整運行的代碼"> </p>
+<h2 id="容器化"><a href="#容器化" class="headerlink" title="容器化"></a>容器化</h2><p>最後透過 Dockerfile 將專案建立成 image<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_172341.png" alt="不同的模式調整運行的代碼"><br>再將 image 運行就完成前後端整合功能的雛型  </p>
+<blockquote>
+<p>專案位置：<br><a target="_blank" rel="noopener" href="https://github.com/FiddleLiu0528/CoreMvcVuePractice">https://github.com/FiddleLiu0528/CoreMvcVuePractice</a>  </p>
+</blockquote>
+<hr>
+<p>後記：<br>原先嘗試以微軟的前後端整合開發模式 (僅提供React及Angular版本)<br>研究後發現有包含以下幾點缺點：<br>熱加載、代理伺服器版本支援度、部分情境後端代碼須重啟才能更新…等等的問題<br>評估先不採用該方式整合；</p>
+<p>後續採用前後端各自獨立開發，打包時再整合發佈<br>這樣開發的效率反而較高。  </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/" data-id="cl4tov6ok00009voo7rh2e41x" data-title=".net6 mvc 前後端專案整合開發(使用vue)" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-建立Hexo部落格" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/" class="article-date">
+  <time class="dt-published" datetime="2022-05-21T20:40:15.000Z" itemprop="datePublished">2022-05-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/">建立Hexo部落格</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>本篇文章的目的為建立自己github 自動部屬的流程。<br>透過這篇文章，可以在推送部落格專案至github的同時，自動部屬最新的部落格。</p>
+<h1 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h1><p>建立的環境使用 windows 10<br>使用的文字編輯器 <a target="_blank" rel="noopener" href="https://code.visualstudio.com/">vs code</a><br>先安裝 <a target="_blank" rel="noopener" href="https://nodejs.org/en/">node.js</a> ，透過node運行封裝好的部落格工具套件 <a target="_blank" rel="noopener" href="https://hexo.io/zh-tw/">Hexo</a> 開發自己的部落格。<br> 透過 <a target="_blank" rel="noopener" href="https://git-scm.com/">git</a> 建立版本控制，可以快速管理部落格的版本。</p>
+<p>安裝好git後，要先在全局設定自己的 git 資訊，這些資訊會是之後每次修改時，紀錄的作者資訊。<br>也可以至 <strong>“C:\Users\{user}\.gitconfig”</strong> 檔案手動調整。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; git config --global user.name &quot;你的名稱&quot;  </span><br><span class="line">&gt; git config --global user.email &quot;你的E-mail&quot;  </span><br></pre></td></tr></table></figure>
+
+<p>使用的版控管理工具是 <a target="_blank" rel="noopener" href="https://www.sourcetreeapp.com/">source tree</a>。</p>
+<p>部屬網站的地方為 <a target="_blank" rel="noopener" href="https://github.com/">github</a>，所以需要先建立屬於自己的帳號。</p>
+<p>有了以上這些環境及帳號，就可以準備打造自己的部落格了。</p>
+<hr>
+<h1 id="建立開發部落格專案"><a href="#建立開發部落格專案" class="headerlink" title="建立開發部落格專案"></a>建立開發部落格專案</h1><h2 id="建立空白專案"><a href="#建立空白專案" class="headerlink" title="建立空白專案"></a>建立空白專案</h2><p>登入github 後，先建立一個儲存庫repository，可以取自己好記的部落格專案名稱，<br>勾選private選項,避免曝露預期存放金鑰以及撰寫中文件。</p>
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0521_210827.png" alt="建立repo"><br><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0521_211654.png" alt="專案設定"></p>
+<h2 id="建立金鑰"><a href="#建立金鑰" class="headerlink" title="建立金鑰"></a>建立金鑰</h2><p>要能夠從本地拉取github線上的專案，必須先建立有加密的通道才能拉取。<br>github 提供HTTPS 以及 SSH 供使用者選擇拉取，這裡採用SSH。<br>打開 cmd 輸入以下指令 (<a target="_blank" rel="noopener" href="https://linux.die.net/man/1/ssh-keygen">指令補充說明</a>)，產生<strong>公鑰</strong>及<strong>私鑰</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;你的E-mail&quot; </span><br></pre></td></tr></table></figure>
+<p>預設建立好的 金鑰位置會放在 <strong>“C:\Users\{user}\.ssh\“</strong> 的資料夾底下，<br>分別為 “id_rsa”(私鑰) 以及 “id_rsa.pub” (公鑰)。</p>
+<h2 id="設定金鑰"><a href="#設定金鑰" class="headerlink" title="設定金鑰"></a>設定金鑰</h2><ul>
+<li><p><strong>公鑰</strong><br>使用文字編輯器打開，將公鑰設定在 github 的帳號<br>帳號 → 設定 → SSH and GPG keys<br>Title 可以以自己方便記的名稱即可<br>Key 的話要依照 open ssh 格式輸入，預設建立出來的公鑰就是依照這個格式，複製貼上即可</p>
+</li>
+<li><p><strong>私鑰</strong><br>Source Tree 選單列 Tools → Options<br>SSH Client 改成 OpenSSH<br>SSH Key 選擇私鑰 (SSH Client 切換後，預設會選擇 <strong>C:\Users\{user}\.ssh\id_rsa</strong>)</p>
+</li>
+</ul>
+<h2 id="拉取空白專案"><a href="#拉取空白專案" class="headerlink" title="拉取空白專案"></a>拉取空白專案</h2><p>先到github 專案複製 SSH 的路徑<br><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_120839.png" alt="複製專案 ssh 路徑"></p>
+<p>source tree 切換至 Clone 工具，貼上複製的 SSH 儲存庫路徑後，<br>如果加密通道設定正確的話，就能正常點擊 Clone 按鈕下載專案<br><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_121333.png" alt="source tree clone 專案"></p>
+<h2 id="空白專案建立-hexo"><a href="#空白專案建立-hexo" class="headerlink" title="空白專案建立 hexo"></a>空白專案建立 hexo</h2><p>可以先參考官方的<a target="_blank" rel="noopener" href="https://hexo.io/zh-tw/">使用文件</a>，先在本地安裝hexo全局工具</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>進到空白專案的資料夾執行以下指令初始化。  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; hexo init &#123;專案名稱&#125;</span><br></pre></td></tr></table></figure>
+<p>等專案初始完成後，在把專案裡面的檔案搬到上一層，可以減少一層資料夾的結構。  </p>
+<blockquote>
+<p>這邊不直接執行 init 是因為，空白專案有包含.git資料夾，直接初始化需要資料夾為空</p>
+</blockquote>
+<p>這樣就完成基本的部落格專案了，接著就是確認專案是否能正常運行，先執行以下指令運行預設部落格專案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; hexo server</span><br></pre></td></tr></table></figure>
+<p>成功會看到以下log內容<br><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_144126.png" alt="hexo server運行正常"></p>
+<p>到本地網址 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000/</a> (預設 port:4000) 就可以看到預設部落格的畫面<br><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_144239.png" alt="預設部落格頁面"></p>
+<h2 id="建立github-個人主頁儲存庫"><a href="#建立github-個人主頁儲存庫" class="headerlink" title="建立github 個人主頁儲存庫"></a>建立github 個人主頁儲存庫</h2><p>github 提供以帳號加上固定格式名稱的儲存庫預設為個人主頁<br>只要依照格式建立的話就能以該名稱建立個人主頁  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;github-username&#125;.github.io</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_161220.png" alt="參考新增個人主頁儲存庫名稱"></p>
+<blockquote>
+<p>未來若有添加其他靜態網站的需求，可在新增的儲存庫，透過上傳名稱為gh-pages的分支，<br>github會以 <em>主頁名稱</em> + <em>該專案名稱</em> 為路由建立頁面</p>
+</blockquote>
+<h2 id="發佈-hexo-靜態頁面-至-個人主頁儲存庫"><a href="#發佈-hexo-靜態頁面-至-個人主頁儲存庫" class="headerlink" title="發佈 hexo 靜態頁面 至 個人主頁儲存庫"></a>發佈 hexo 靜態頁面 至 個人主頁儲存庫</h2><p>將專案發佈到 github，還需要在 hexo 專案添加發布套件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+<p>安裝套件之後，至專案內 <code>_config.yml</code> 檔案，<br>將deploy 內，個人主頁儲存庫的SSH位置設定後保存</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">..</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:&#123;username&#125;/&#123;username&#125;.github.io.git #調整為自己帳號名稱</span><br><span class="line">  branch: main #調整為建立的主要分支名稱</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_162904.png" alt="添加發布設定"></p>
+<p>以上步驟都完成後，可以在hexo 專案執行以下指令，進行第一次的個人主頁發佈。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; hexo deploy</span><br><span class="line">or</span><br><span class="line">&gt; hexo d</span><br></pre></td></tr></table></figure>
+
+<p>執行完成後，可以至個人主頁儲存庫的settings → Pages 查看是否已部屬完成<br>約幾分鐘後就可至 https:&#x2F;&#x2F;{user}.github.io&#x2F; 查看個人主頁。</p>
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_164838.png" alt="檢查發布是否已完成"></p>
+<h2 id="Hexo-專案推送同步部屬個人主頁-建立-action-flow"><a href="#Hexo-專案推送同步部屬個人主頁-建立-action-flow" class="headerlink" title="Hexo 專案推送同步部屬個人主頁 (建立 action flow)"></a>Hexo 專案推送同步部屬個人主頁 (建立 action flow)</h2><p>我們需要另一組金鑰，在我們Hexo 部落格專案推送到儲存庫的時候，<br>自動運行時另一個可以部屬的SSH通道，<br>透過以下指令建立一組新的 金鑰，生成<code>github-deploy-key</code> 以及 <code>github-deploy-key.pub</code>。<br>預設路徑為： <strong>C:\Users\{user}</strong> 底下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt; ssh-keygen -f github-deploy-key</span><br></pre></td></tr></table></figure>
+<p>接著分別在兩個專案設立私鑰以及公鑰：</p>
+<ul>
+<li><p>Hexo 專案<br>  Name欄位 輸入 HEXO_DEPLOY_PRI<br>  Value欄位 輸入私鑰 github-deploy-key 的內容(begin和end的兩行也需要)<br>  <img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_171522.png" alt="添加私鑰"></p>
+</li>
+<li><p>個人主頁<br>  Title欄位 輸入 HEXO_DEPLOY_PUB<br>  Key欄位 輸入公鑰 github-deploy-key.pub 的內容<br>  Allow write access選項需要打勾 (需要權限推送，沒打勾action 會執行失敗)<br>  <img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_172135.png" alt="添加公鑰"></p>
+</li>
+</ul>
+<p>個別儲存庫設定好金鑰後，接著就可以設定自動化部屬的腳本：<br>在 Hexo 專案的 Actions分頁，點擊 “set up a workflow yourself”<br>新建一個 main.yml 檔，預設會在(“&#x2F;.github&#x2F;workflows&#x2F;main.yml”路徑底下) </p>
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0522_200002.png" alt="添加action flow"></p>
+<p>將自動化腳本程式碼覆蓋至 Edit new file後，<br>點擊 Start commit，將此修改commit至此分支  </p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#workflow名稱</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">HEXO</span> <span class="string">CI</span></span><br><span class="line"><span class="comment">#在執行push到master分支時觸發</span></span><br><span class="line"><span class="comment">#請特別注意你的repo所使用的主要分支，是main就需要修改為main</span></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">main</span></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">strategy:</span></span><br><span class="line">      <span class="attr">matrix:</span></span><br><span class="line">        <span class="attr">node-version:</span> [<span class="number">12.</span><span class="string">x</span>]</span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">uses:</span> <span class="string">actions/checkout@v1</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Use</span> <span class="string">Node.js</span> <span class="string">$&#123;&#123;</span> <span class="string">matrix.node-version</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v1</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="string">$&#123;&#123;</span> <span class="string">matrix.node-version</span> <span class="string">&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configuration</span> <span class="string">environment</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">HEXO_DEPLOY_PRI:</span> <span class="string">$&#123;&#123;secrets.HEXO_DEPLOY_PRI&#125;&#125;</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          mkdir -p ~/.ssh/</span></span><br><span class="line"><span class="string">          echo &quot;$HEXO_DEPLOY_PRI&quot; | tr -d &#x27;\r&#x27; &gt; ~/.ssh/id_rsa</span></span><br><span class="line"><span class="string">          chmod 600 ~/.ssh/id_rsa</span></span><br><span class="line"><span class="string">          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts</span></span><br><span class="line"><span class="string">          git config --global user.name &quot;FiddleLiu0528&quot;</span></span><br><span class="line"><span class="string">          git config --global user.email &quot;fiddleliu0528@gmail.com&quot;</span></span><br><span class="line"><span class="string">          # 這裡記得修改成你自己的資料</span></span><br><span class="line"><span class="string"></span>      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          npm i -g hexo-cli</span></span><br><span class="line"><span class="string">          npm i</span></span><br><span class="line"><span class="string"></span>      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">hexo</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line">          <span class="string">hexo</span> <span class="string">generate</span> <span class="string">&amp;&amp;</span> <span class="string">hexo</span> <span class="string">deploy</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/0528_094634.png" alt="添加action flow"></p>
+<p>到這邊就完成了，接著只需要將<br>個人部落格的專案簽入<br>就會自動編譯並發佈至個人主頁。</p>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p><a target="_blank" rel="noopener" href="https://www.rainmeocat.com/post/%E3%80%90%E9%83%A8%E8%90%BD%E6%A0%BC%E7%87%9F%E5%BB%BA%E7%AD%86%E8%A8%98%E3%80%91%E7%94%A8github-action%E8%87%AA%E5%8B%95%E9%83%A8%E7%BD%B2%E5%92%8C%E8%B8%A9%E5%9D%91%E8%A8%98%E9%8C%84">手把手帶你用github action自動部署部落格和踩坑記錄</a><br><a target="_blank" rel="noopener" href="https://chanchandev.com/note/Hexo/hexo-introduction/2335841689/#Github-Page-%E6%BA%96%E5%82%99%E4%BA%8B%E9%A0%85">架設部落格第一次就上手 Hexo + Github + 自訂網域</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://fiddleliu0528.github.io/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/" data-id="cl4tov6oq00019voodmt416zk" data-title="建立Hexo部落格" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/">.net6 mvc 前後端專案整合開發(使用vue)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/">建立Hexo部落格</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Fiddle Liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
