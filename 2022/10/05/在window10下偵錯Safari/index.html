@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>在window10下偵錯Safari | Fiddle 金魚腦程式筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="引言偵錯 iOS 瀏覽器的方式最主流的方式為使用完整的 iOS 系統 但是在手邊可能沒有 Mac 的情況下會考慮以下幾種替代方式進行偵錯  使用 sub system 以 web-kit 為基礎的瀏覽器進行除錯(本篇主要採取方式) 套件連結手機除錯(remotedebug-ios-webkit-adapter) 線上付費偵錯工具(https:&#x2F;&#x2F;inspect.dev&#x2F;) 租用實體機進行測試(e.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在window10下偵錯Safari">
+<meta property="og:url" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/index.html">
+<meta property="og:site_name" content="Fiddle 金魚腦程式筆記">
+<meta property="og:description" content="引言偵錯 iOS 瀏覽器的方式最主流的方式為使用完整的 iOS 系統 但是在手邊可能沒有 Mac 的情況下會考慮以下幾種替代方式進行偵錯  使用 sub system 以 web-kit 為基礎的瀏覽器進行除錯(本篇主要採取方式) 套件連結手機除錯(remotedebug-ios-webkit-adapter) 線上付費偵錯工具(https:&#x2F;&#x2F;inspect.dev&#x2F;) 租用實體機進行測試(e.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_105045.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_104731.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_105754.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/Screenshot_2022-10-05_11-03-08.png">
+<meta property="article:published_time" content="2022-10-05T10:06:47.000Z">
+<meta property="article:modified_time" content="2022-10-28T06:44:09.742Z">
+<meta property="article:author" content="Fiddle Liu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_105045.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Fiddle 金魚腦程式筆記" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Fiddle 金魚腦程式筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://fiddleliu0528.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-在window10下偵錯Safari" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/" class="article-date">
+  <time class="dt-published" datetime="2022-10-05T10:06:47.000Z" itemprop="datePublished">2022-10-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      在window10下偵錯Safari
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>偵錯 iOS 瀏覽器的方式<br>最主流的方式為使用完整的 iOS 系統</p>
+<p>但是在手邊可能沒有 Mac 的情況下<br>會考慮以下幾種替代方式進行偵錯</p>
+<ol>
+<li>使用 sub system 以 web-kit 為基礎的瀏覽器進行除錯(本篇主要採取方式)</li>
+<li>套件連結手機除錯(<a target="_blank" rel="noopener" href="https://github.com/RemoteDebug/remotedebug-ios-webkit-adapter">remotedebug-ios-webkit-adapter</a>)</li>
+<li>線上付費偵錯工具(<a target="_blank" rel="noopener" href="https://inspect.dev/">https://inspect.dev/</a>)</li>
+<li>租用實體機進行測試(e.g. <a target="_blank" rel="noopener" href="https://www.browserstack.com/">BrowserStack</a>)</li>
+</ol>
+<p>方法 2 的作者已經轉為開發線上的付費工具了，也沒有再提供新的版本供開發者偵錯(最高到 iOS13)<br>那方法 3、4 就是得付費，對於小型程度的前端專案來說，成本較高一些<br>綜合評估會採用方法 1 的方式，來進行 iOS 類瀏覽器的偵錯</p>
+<span id="more"></span>
+
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>win10(Version 1903)之後的版本<br>(WSL 2 is only available in Windows 11 or Windows 10, Version 1903, Build 18362 or later.)</p>
+<h2 id="建置的流程"><a href="#建置的流程" class="headerlink" title="建置的流程"></a>建置的流程</h2><ol>
+<li>安裝 wsl2</li>
+<li>建立本地 sub system</li>
+<li>安裝遠端連線的套件</li>
+<li>遠端連線</li>
+<li>安裝 webkit 基礎瀏覽器(Epiphany)</li>
+<li>其他注意項目</li>
+</ol>
+<h3 id="安裝-WSL2"><a href="#安裝-WSL2" class="headerlink" title="安裝 WSL2"></a>安裝 WSL2</h3><p>先以管理員的身分開啟 powershell</p>
+<p>執行指令 安裝 wsl</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl <span class="literal">--install</span></span><br></pre></td></tr></table></figure>
+
+<p>安裝完畢後需重啟系統<br>(可用 <code>$ wsl -l -v</code> 查看當前安裝的 sub system 運行的 wsl 版本號，<br>務必確認為 version 2, version 1 套件上有不兼容的問題)</p>
+<h3 id="設定-ubuntu-套件"><a href="#設定-ubuntu-套件" class="headerlink" title="設定 ubuntu 套件"></a>設定 ubuntu 套件</h3><p>待重啟後會預設彈出 ubuntu sub system command line 視窗<br>或者於選單中點擊 icon 開啟<br><img src="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_105045.png" alt="ubuntu子系統連結"><br>(撰寫期間 預設版本為 ubuntu 20.04.5 LTS，可用 <code>$ lsb_release -a</code> 指令查看)</p>
+<p>預設登入須提供一組帳號密碼，這邊建立後須記得，後續操作都會使用到</p>
+<p>登入後，需更新及升級當前 ubuntu 套件指令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update &amp;&amp; sudo apt upgrade</span><br></pre></td></tr></table></figure>
+
+<p>安裝 xfce4 桌面環境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y xfce4</span><br></pre></td></tr></table></figure>
+
+<p>安裝 xfce4 相關組件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y xfce4-goodies</span><br></pre></td></tr></table></figure>
+
+<p>安裝遠端連線套件：(若詢問要使用哪種 Display，選擇 gdm3)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install -y xrdp</span><br></pre></td></tr></table></figure>
+
+<p>遠端連線設定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">cp</span> /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak</span><br><span class="line">sudo sed -i <span class="string">&#x27;s/3389/3390/g&#x27;</span> /etc/xrdp/xrdp.ini</span><br><span class="line">sudo sed -i <span class="string">&#x27;s/max_bpp=32/#max_bpp=32\nmax_bpp=128/g&#x27;</span> /etc/xrdp/xrdp.ini</span><br><span class="line">sudo sed -i <span class="string">&#x27;s/xserverbpp=24/#xserverbpp=24\nxserverbpp=128/g&#x27;</span> /etc/xrdp/xrdp.ini</span><br><span class="line"><span class="built_in">echo</span> xfce4-session &gt; ~/.xsession</span><br></pre></td></tr></table></figure>
+
+<p>啟動檔執行內容，使用 nano 編輯器加入 xfce4 啟動設定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+
+<p>註解最底部兩個設定</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span><br><span class="line"># exec /bin/sh /etc/X11/Xsession</span><br></pre></td></tr></table></figure>
+
+<p>加入以下啟動設定</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># xfce</span><br><span class="line"> startxfce4</span><br></pre></td></tr></table></figure>
+
+<p>輸入 ctrl + X 退出，詢問是否儲存，輸入 Y，再輸入 Enter 退出 nano</p>
+<h3 id="運行遠端連線工具"><a href="#運行遠端連線工具" class="headerlink" title="運行遠端連線工具"></a>運行遠端連線工具</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/xrdp start</span><br></pre></td></tr></table></figure>
+
+<p>(可用 <code>$ service xrdp status</code> 指令檢查是否正確啟動中)</p>
+<h3 id="使用-RDP-連線"><a href="#使用-RDP-連線" class="headerlink" title="使用 RDP 連線"></a>使用 RDP 連線</h3><p>開啟 RDP 輸入 <code>localhost:3390</code> 連線<br><img src="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_104731.png" alt="RDP連線"></p>
+<h3 id="安裝-webkit-瀏覽器套件-Epiphany"><a href="#安裝-webkit-瀏覽器套件-Epiphany" class="headerlink" title="安裝 webkit 瀏覽器套件(Epiphany)"></a>安裝 webkit 瀏覽器套件(Epiphany)</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install epiphany-browser</span><br></pre></td></tr></table></figure>
+
+<h3 id="設定避免黑屏"><a href="#設定避免黑屏" class="headerlink" title="設定避免黑屏"></a>設定避免黑屏</h3><p>關閉自動鎖定畫面避免置放過久黑屏<br><code>視窗左上角</code> &gt; <code>Settings</code> &gt; <code>Light Locker Settings</code> &gt; <code>Automatically lock the session</code><br>設定為 <code>Never</code><br><img src="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/1005_105754.png" alt="設定避免黑屏"></p>
+<h3 id="防火牆設定"><a href="#防火牆設定" class="headerlink" title="防火牆設定"></a>防火牆設定</h3><p>目前並未設定即可正常請求</p>
+<p>透過指令可查看 IP，串連不同網段請求(window &amp; wsl)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig</span><br></pre></td></tr></table></figure>
+
+<p>(p.s. 如果有請求不到的情況，可以短暫關閉所有防火牆來確定是否為防火牆阻擋)</p>
+<h3 id="操作畫面"><a href="#操作畫面" class="headerlink" title="操作畫面"></a>操作畫面</h3><p><img src="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/Screenshot_2022-10-05_11-03-08.png" alt="操作畫面01"></p>
+<h2 id="其他補充"><a href="#其他補充" class="headerlink" title="其他補充"></a>其他補充</h2><p>微軟在 2020 年將 linux 的核心加入供使用者開發使用，工具名稱為 WSL2；<br>WSL 2 提供 WSL 1 的優點，但會使用實際的 Linux 核心，而不是 WSL 1 之類的轉譯層，進而加快效能。</p>
+<h2 id="參考"><a href="#參考" class="headerlink" title="參考"></a>參考</h2><p><a target="_blank" rel="noopener" href="https://blog.codeisc.com/2022/03/11/safari-webkit-wsl2-windows10-windows11.html">Debugging Safari-specific bugs in Windows via WSL2</a><br><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=smR3i4i4kaQ">Install WSL2 with GUI and RDP (Super easy!)</a><br><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=QC7a9nowsz8">Install Desktop GUI for WSL | WSL Enable Desktop Guide</a><br><a target="_blank" rel="noopener" href="https://dev.to/rescenic/comment/obea">Linux on Windows: WSL with Desktop Environment via RDP</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/64763147/access-a-localhost-running-in-windows-from-inside-wsl2">Access a localhost running in Windows from inside WSL2?</a><br><a target="_blank" rel="noopener" href="https://ld246.com/article/1605342250324">安装 wsl2 后一些必要的配置</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://fiddleliu0528.github.io/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/" data-id="cl9s4ps1600039yos3qpffv0l" data-title="在window10下偵錯Safari" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/10/05/html-span%E5%85%83%E7%B4%A0%E9%9A%B1%E8%97%8F%E7%9A%84%E9%96%93%E8%B7%9D/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          html span元素隱藏的間距
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">.net6 mvc 前後端專案整合開發(使用vue)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">October 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/">使用protobuf格式透過websocket交換資料</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/html-span%E5%85%83%E7%B4%A0%E9%9A%B1%E8%97%8F%E7%9A%84%E9%96%93%E8%B7%9D/">html span元素隱藏的間距</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/">在window10下偵錯Safari</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/">.net6 mvc 前後端專案整合開發(使用vue)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/">建立Hexo部落格</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Fiddle Liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

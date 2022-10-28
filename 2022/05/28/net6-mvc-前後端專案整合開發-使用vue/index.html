@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>.net6 mvc 前後端專案整合開發(使用vue) | Fiddle 金魚腦程式筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="引言本篇文章的目的是使用.net6 mvc 專案，加上前端框架 vue3 來完成一個前後端整合專案，使專案可前後端分開開發，並且整合前後端專案一起發佈，不需要分開站台進行發佈。最後將專案以容器的方式運行。 為完整保護網站頁面的安全性，一般來說會採用 SSR 的方式渲染頁面，確保使用者取得的內容，都是經過後端驗證後才提供。但因為大多內容都需請求後端回應或運算顯示結果，相對就會失去一些速度或者效能分散">
+<meta property="og:type" content="article">
+<meta property="og:title" content=".net6 mvc 前後端專案整合開發(使用vue)">
+<meta property="og:url" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/index.html">
+<meta property="og:site_name" content="Fiddle 金魚腦程式筆記">
+<meta property="og:description" content="引言本篇文章的目的是使用.net6 mvc 專案，加上前端框架 vue3 來完成一個前後端整合專案，使專案可前後端分開開發，並且整合前後端專案一起發佈，不需要分開站台進行發佈。最後將專案以容器的方式運行。 為完整保護網站頁面的安全性，一般來說會採用 SSR 的方式渲染頁面，確保使用者取得的內容，都是經過後端驗證後才提供。但因為大多內容都需請求後端回應或運算顯示結果，相對就會失去一些速度或者效能分散">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_154254.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155111.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155648.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_163105.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164409.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164736.png">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_172341.png">
+<meta property="article:published_time" content="2022-05-28T10:11:44.000Z">
+<meta property="article:modified_time" content="2022-10-28T06:44:09.738Z">
+<meta property="article:author" content="Fiddle Liu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_154254.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Fiddle 金魚腦程式筆記" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Fiddle 金魚腦程式筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://fiddleliu0528.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-net6-mvc-前後端專案整合開發-使用vue" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/" class="article-date">
+  <time class="dt-published" datetime="2022-05-28T10:11:44.000Z" itemprop="datePublished">2022-05-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      .net6 mvc 前後端專案整合開發(使用vue)
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>本篇文章的目的是使用.net6 mvc 專案，加上前端框架 vue3 來完成一個前後端整合專案，<br>使專案可前後端分開開發，並且整合前後端專案一起發佈，不需要分開站台進行發佈。<br>最後將專案以容器的方式運行。</p>
+<p>為完整保護網站頁面的安全性，一般來說會採用 SSR 的方式渲染頁面，<br>確保使用者取得的內容，都是經過後端驗證後才提供。<br>但因為大多內容都需請求後端回應或運算顯示結果，<br>相對就會失去一些速度或者效能分散運算的優勢；</p>
+<p>所以，採用 CSR 或 SSR 的方式就需要權衡利弊下，<br>是以安全性還是使用者體驗為優先來決定。</p>
+<p>這邊採取折衷的方式，在使用者尚未驗證通過之前，<br>不會提供主要頁面功能的靜態資訊給使用者。</p>
+<span id="more"></span>
+
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>OS windows 10<br>IDE <a target="_blank" rel="noopener" href="https://visualstudio.microsoft.com/zh-hant/downloads/">Visual Studio 2022</a><br>文字編輯器 <a target="_blank" rel="noopener" href="https://code.visualstudio.com/">Visual Studio Code</a><br>開發者工具 <a target="_blank" rel="noopener" href="https://dotnet.microsoft.com/en-us/download/dotnet/6.0">.net6 SDK</a><br>容器工具 <a target="_blank" rel="noopener" href="https://www.docker.com/products/docker-desktop/">docker desktop</a></p>
+<p><em>注意項目：</em></p>
+<ol>
+<li>visual studio .net6 必須使用 2022 的版本才可以運行，請用 2022 進行開發</li>
+<li>在安裝 Visual Studio 的時候若有勾選網頁開發的話，也會一併安裝.net6 的開發者工具 SDK</li>
+<li>docker desktop 需要先註冊帳號</li>
+</ol>
+<h2 id="建立-mvc-專案"><a href="#建立-mvc-專案" class="headerlink" title="建立 mvc 專案"></a>建立 mvc 專案</h2><p>預設的範本採用 MVC<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_154254.png" alt="選取 C# MVC 專案"></p>
+<h2 id="建立版本控管"><a href="#建立版本控管" class="headerlink" title="建立版本控管"></a>建立版本控管</h2><p>建立專案之後，通常會先加入本地的版本控管，<br>以方便查看調整的內容比較或退回；<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155111.png" alt="建立版本控管"></p>
+<h2 id="移除-MVC-的前端檔案"><a href="#移除-MVC-的前端檔案" class="headerlink" title="移除 MVC 的前端檔案"></a>移除 MVC 的前端檔案</h2><p>由於原先 MVC 的專案有預設的前端頁面及資源，<br>而我們是採用 vue 的方式進行前端開發，所以這些資源可以被移除<br>可直接將 wwwroot 的資料夾進行移除</p>
+<h2 id="建立前端專案"><a href="#建立前端專案" class="headerlink" title="建立前端專案"></a>建立前端專案</h2><p>在專案底下添加 vue 的前端專案。<br>這邊因為要實作是有登入的後台功能，<br>所以在網頁專案底下建立 ClientAPP 資料夾，<br>裏頭再建立了兩個前端專案，分別為 login 以及 main<br>建立後 分別運行前端專案，查看是否可正常運行<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_155648.png" alt="前端專案"></p>
+<h2 id="調整-csproj-檔設定"><a href="#調整-csproj-檔設定" class="headerlink" title="調整 csproj 檔設定"></a>調整 csproj 檔設定</h2><p><a target="_blank" rel="noopener" href="https://github.com/FiddleLiu0528/CoreMvcVuePractice/blob/main/CoreMvcVuePractice/CoreMvcVuePractice.csproj">csproj 設定檔</a>的調整主要目的為：</p>
+<ol>
+<li>增加前端專編譯使用的路徑設定</li>
+<li>排除大量前端套件於檔案總管內的顯示</li>
+<li>本地開發獲取前端編譯完成的路徑解析</li>
+<li>專案發佈檢查前端套件及編譯路徑調整</li>
+</ol>
+<h2 id="後端-controller-與-views-結構調整"><a href="#後端-controller-與-views-結構調整" class="headerlink" title="後端 controller 與 views 結構調整"></a>後端 controller 與 views 結構調整</h2><p>搭配前端專案，controller 與 views 的名稱分別調整為 login 以及 main，<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_163105.png" alt="搭配前端專案名稱調整"></p>
+<p>後續會實作，當使用者呼叫 main 但沒有權限時，會轉導至 login 頁面</p>
+<p>views 頁面的資料，會改成讀前端建置出來的首頁檔<br>預設為 index.html，這裡調整名稱為 template 並且沒有附檔名<br>避免使用者可以直接存取。<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164409.png" alt="修改預設首頁名稱為模板"></p>
+<p>以 IO 的方式讀取至靜態緩存，並注入到 views 提供給使用者<br>這樣就可以達成將前端頁面轉換為 SSR 的方式提供</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Html.Raw(StaticFrontEndPages.loginPage)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Html.Raw(StaticFrontEndPages.mainPage)</span><br></pre></td></tr></table></figure>
+
+<h2 id="開發與發佈設定"><a href="#開發與發佈設定" class="headerlink" title="開發與發佈設定"></a>開發與發佈設定</h2><p>在本地開發時，雖然大多時候前端都是直接使用 vs code 進行開發<br>但也會有前後端功能需整合測試的情境出現<br>因為當開發與發佈的靜態檔案會有所不同的時候<br>須添加部分設定，讓專案可依照不同的模式調整運行的代碼內容<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_164736.png" alt="不同的模式調整運行的代碼"></p>
+<h2 id="容器化"><a href="#容器化" class="headerlink" title="容器化"></a>容器化</h2><p>最後透過 Dockerfile 將專案建立成 image<br><img src="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/0625_172341.png" alt="不同的模式調整運行的代碼"><br>再將 image 運行就完成前後端整合功能的雛型</p>
+<blockquote>
+<p>專案位置：<br>[<a target="_blank" rel="noopener" href="https://github.com/FiddleLiu0528/CoreMvcVuePractice]">https://github.com/FiddleLiu0528/CoreMvcVuePractice]</a></p>
+</blockquote>
+<hr>
+<p>後記：<br>原先嘗試以微軟的前後端整合開發模式 (僅提供 React 及 Angular 版本)<br>研究後發現有包含以下幾點缺點：<br>熱加載、代理伺服器版本支援度、部分情境後端代碼須重啟才能更新…等等的問題<br>評估先不採用該方式整合；</p>
+<p>後續採用前後端各自獨立開發，打包時再整合發佈<br>這樣開發的效率反而較高。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://fiddleliu0528.github.io/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/" data-id="cl9s4ps1300019yoshm3pd6g7" data-title=".net6 mvc 前後端專案整合開發(使用vue)" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          在window10下偵錯Safari
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">建立Hexo部落格</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">October 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/">使用protobuf格式透過websocket交換資料</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/html-span%E5%85%83%E7%B4%A0%E9%9A%B1%E8%97%8F%E7%9A%84%E9%96%93%E8%B7%9D/">html span元素隱藏的間距</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/">在window10下偵錯Safari</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/">.net6 mvc 前後端專案整合開發(使用vue)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/">建立Hexo部落格</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Fiddle Liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

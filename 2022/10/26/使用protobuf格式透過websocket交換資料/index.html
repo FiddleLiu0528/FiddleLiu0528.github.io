@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>使用protobuf格式透過websocket交換資料 | Fiddle 金魚腦程式筆記</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="引言通常使用 websocket 傳輸的資料，會是即時且變動快速的若在傳輸前需大量運算資料壓縮，會增加傳輸的時間成本導致資料變動不夠即時 因此，會考慮透過 google 訂定的資料結構協定 Protocol Buffers (protobuf)來進行傳輸 專案目標 透過 .net6 + vue3 建置最基礎的 websocket 連線傳輸 實作 websocket 傳輸採用 json、json c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用protobuf格式透過websocket交換資料">
+<meta property="og:url" content="https://fiddleliu0528.github.io/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/index.html">
+<meta property="og:site_name" content="Fiddle 金魚腦程式筆記">
+<meta property="og:description" content="引言通常使用 websocket 傳輸的資料，會是即時且變動快速的若在傳輸前需大量運算資料壓縮，會增加傳輸的時間成本導致資料變動不夠即時 因此，會考慮透過 google 訂定的資料結構協定 Protocol Buffers (protobuf)來進行傳輸 專案目標 透過 .net6 + vue3 建置最基礎的 websocket 連線傳輸 實作 websocket 傳輸採用 json、json c">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://fiddleliu0528.github.io/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/20221026_135630.png">
+<meta property="article:published_time" content="2022-10-26T12:44:16.000Z">
+<meta property="article:modified_time" content="2022-10-28T06:44:09.742Z">
+<meta property="article:author" content="Fiddle Liu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fiddleliu0528.github.io/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/20221026_135630.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Fiddle 金魚腦程式筆記" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Fiddle 金魚腦程式筆記</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://fiddleliu0528.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-使用protobuf格式透過websocket交換資料" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/" class="article-date">
+  <time class="dt-published" datetime="2022-10-26T12:44:16.000Z" itemprop="datePublished">2022-10-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      使用protobuf格式透過websocket交換資料
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>通常使用 websocket 傳輸的資料，會是即時且變動快速的<br>若在傳輸前需大量運算資料壓縮，會增加傳輸的時間成本<br>導致資料變動不夠即時</p>
+<p>因此，會考慮透過 google 訂定的資料結構協定 Protocol Buffers (protobuf)來進行傳輸</p>
+<h2 id="專案目標"><a href="#專案目標" class="headerlink" title="專案目標"></a>專案目標</h2><ol>
+<li>透過 .net6 + vue3 建置最基礎的 websocket 連線傳輸</li>
+<li>實作 websocket 傳輸採用 json、json compress、protobuf 格式</li>
+<li>比較傳輸格式之間的優缺點</li>
+</ol>
+<span id="more"></span>
+
+<h2 id="環境"><a href="#環境" class="headerlink" title="環境"></a>環境</h2><p>windows10<br>.net6 的環境編譯<br>nodejs v14.18 以上的版本<br>wireshark</p>
+<h3 id="運行裝置"><a href="#運行裝置" class="headerlink" title="運行裝置"></a>運行裝置</h3><p>Processor Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz 3.60 GHz<br>Installed RAM 16.0 GB</p>
+<h2 id="傳輸流程"><a href="#傳輸流程" class="headerlink" title="傳輸流程"></a>傳輸流程</h2><h3 id="json-傳輸流程"><a href="#json-傳輸流程" class="headerlink" title="json 傳輸流程"></a>json 傳輸流程</h3><p><code>產生資料物件 -&gt; 序列化為 json 格式 -&gt; 傳送至前端 -&gt; 前端接收 -&gt; 後透過套件 Pako 處理 轉換為 js 資料格式</code></p>
+<h3 id="json-壓縮傳輸流程"><a href="#json-壓縮傳輸流程" class="headerlink" title="json 壓縮傳輸流程"></a>json 壓縮傳輸流程</h3><p><code>產生資料物件 -&gt; 序列化為 json 格式 -&gt; 進行資料壓縮 byteArray -&gt; 傳送至前端 -&gt; 前端接收 -&gt; 後透過套件 Pako 處理 轉換為 js 資料格式</code></p>
+<h3 id="protobuf-傳輸流程"><a href="#protobuf-傳輸流程" class="headerlink" title="protobuf 傳輸流程"></a>protobuf 傳輸流程</h3><p><code>產生資料物件 -&gt; 序列化為 byteArray -&gt; 傳送至前端 -&gt; 前端接收 -&gt; 使用 protobuf 定義檔轉換為 js 資料格式</code></p>
+<p>這邊預計比較上述流程的</p>
+<ol>
+<li>資料處理時間</li>
+<li>資料大小</li>
+<li>安全性<br>來評估專案採用的方式；</li>
+</ol>
+<p>(測試主要以後端-&gt;前端，因為後端必須處理所有使用者資料，<br>相對於前端只需處理自己的資料負荷相對小，這裡就先不討論)</p>
+<h2 id="實作"><a href="#實作" class="headerlink" title="實作"></a>實作</h2><p>先訂好 protobuf 的資料格式文件 .proto<br>可以先參考一些 protobuf 格式的<a target="_blank" rel="noopener" href="https://yami.io/protobuf/">介紹</a><br>建置新的 protobuf 資料格式文件</p>
+<p>或者使用轉換<a target="_blank" rel="noopener" href="https://json-to-proto.github.io/">工具</a><br>將已定義好的 json 格式轉換成 .proto</p>
+<p>接著，透過.proto 文件，前後端各自轉換至可用的物件</p>
+<h3 id="proto-轉換-C-物件"><a href="#proto-轉換-C-物件" class="headerlink" title="proto 轉換 C#物件"></a>proto 轉換 C#物件</h3><p>C#轉換需要安裝<a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/releases">protc</a>工具<br>下載解壓縮後，工具放置於 C:\protoc-21.8-win64<br>設置環境變數 C:\protoc-21.8-win64\bin<br>(這部分可以依照自己習慣調整工具放置位置)</p>
+<p>proto 轉換 C#物件指令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$protoc --csharp_out=. \*.proto</span><br></pre></td></tr></table></figure>
+
+<h3 id="proto-轉換-TS-物件"><a href="#proto-轉換-TS-物件" class="headerlink" title="proto 轉換 TS 物件"></a>proto 轉換 TS 物件</h3><p>proto 轉換 TS 物件工具及指令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npx pbjs -t json-module -w es6 -o src/proto/proto.ts src/proto/\*.proto</span><br></pre></td></tr></table></figure>
+
+<p>來源資料夾為 <code>src/proto/*.proto</code> ，會將所有 proto 整合輸出為單一檔案 <code>src/proto/proto.ts</code></p>
+<p>前端專案透過以下指令安裝<code>protobufjs</code>使用套件</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$npm install protobufjs --save-dev</span><br><span class="line">$npm install protobufjs-cli --save-dev</span><br></pre></td></tr></table></figure>
+
+<p>實際應用的部分就不多描述了，<a target="_blank" rel="noopener" href="https://github.com/FiddleLiu0528/websocket-transport-compare">專案</a>裡已有實作可直接下載查看</p>
+<h2 id="比較"><a href="#比較" class="headerlink" title="比較"></a>比較</h2><p>短資料：僅包含指令名稱<br>長資料：指令名稱 + 65535 長度資料(各語系)<br>原始資料結構：<code>&#123; action = &quot;register&quot;, id=&quot;&quot; &#125;</code></p>
+<p>測試的項目為：</p>
+<ol>
+<li>短資料處理傳輸後的長度</li>
+<li>短資料 10000 筆處理花費時間</li>
+<li>長資料處理傳輸後的長度 (5 語系)</li>
+<li>長資料 10000 筆處理花費時間 (5 語系)</li>
+</ol>
+<h2 id="測試結果"><a href="#測試結果" class="headerlink" title="測試結果"></a>測試結果</h2><p>由於運行裝置及資料來源隨機生成的關係，以下數據僅為約略參考：</p>
+<h3 id="短資料處理傳輸後的長度"><a href="#短資料處理傳輸後的長度" class="headerlink" title="短資料處理傳輸後的長度"></a>短資料處理傳輸後的長度</h3><p>json：41(byte)<br>json compress：37(byte)<br>protobuf：10(byte)</p>
+<blockquote>
+<p>當傳輸的資料越短，protobuf 結構的資料會越有優勢(縮小 4 倍以上)</p>
+</blockquote>
+<h3 id="短資料-10000-筆處理花費時間"><a href="#短資料-10000-筆處理花費時間" class="headerlink" title="短資料 10000 筆處理花費時間"></a>短資料 10000 筆處理花費時間</h3><p>json：1657(ms)<br>json compress：2033(ms)<br>protobuf：10(ms)</p>
+<blockquote>
+<p>使用 protobuf 處理資料幾乎沒什麼消耗</p>
+</blockquote>
+<h3 id="長資料處理傳輸後的長度-5-語系"><a href="#長資料處理傳輸後的長度-5-語系" class="headerlink" title="長資料處理傳輸後的長度(5 語系)"></a>長資料處理傳輸後的長度(5 語系)</h3><p>繁<br>json：65576(byte)<br>json compress：18650(byte)<br>protobuf：65549(byte)</p>
+<p>簡<br>json：65576(byte)<br>json compress：18821(byte)<br>protobuf：65549(byte)</p>
+<p>英<br>json：65576(byte)<br>json compress：18844(byte)<br>protobuf：65549(byte)</p>
+<p>越<br>json：86467(byte)<br>json compress：26646(byte)<br>protobuf：86440(byte)</p>
+<p>泰<br>json：193662(byte)<br>json compress：36275(byte)<br>protobuf：193623(byte)</p>
+<blockquote>
+<p>非 ASCII(越，泰語系)由 UTF8 轉 byte array 長度會增加，<br>當傳輸資料內容越大時，protobuf 資料結構壓縮的優勢會變小；<br>而壓縮過後的 json，與未壓縮前傳輸資料小了約 3.2 倍(越)~5.3 倍(泰)</p>
+</blockquote>
+<h3 id="長資料-10000-筆處理花費時間-5-語系"><a href="#長資料-10000-筆處理花費時間-5-語系" class="headerlink" title="長資料 10000 筆處理花費時間(5 語系)"></a>長資料 10000 筆處理花費時間(5 語系)</h3><p>繁<br>json：2370(ms)<br>json compress：20742(ms)<br>protobuf：2725(ms)</p>
+<p>簡<br>json：2363(ms)<br>json compress：21347(ms)<br>protobuf：2733(ms)</p>
+<p>英<br>json：2420(ms)<br>json compress：21919(ms)<br>protobuf：2976(ms)</p>
+<p>越<br>json：9602(ms)<br>json compress：40727(ms)<br>protobuf：2722(ms)</p>
+<p>泰<br>json：8024(ms)<br>json compress：90383(ms)<br>protobuf：6304(ms)</p>
+<blockquote>
+<p>長資料的處理上，在非 ascii 的語系上 protobuf 表現較好(越語系最佳)，繁、簡、英 語系則是 json 好一些些<br>而比較有無壓縮(不分 json 或 protobuf)所花費的時間，差異可以到 8 倍(繁) ~ 14 倍(越)</p>
+</blockquote>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><h3 id="Protobuf-優點"><a href="#Protobuf-優點" class="headerlink" title="Protobuf 優點"></a>Protobuf 優點</h3><ol>
+<li>傳輸結構小</li>
+<li>型別明確</li>
+</ol>
+<h3 id="Protobuf-缺點"><a href="#Protobuf-缺點" class="headerlink" title="Protobuf 缺點"></a>Protobuf 缺點</h3><ol>
+<li>相關參考資源相比 json 少</li>
+<li>現行環境方法套件需額外擴充</li>
+<li>當協議變動時，參考端調整較繁瑣</li>
+</ol>
+<hr>
+<p>protobuf 的資料結構在傳輸上相對於 json 格式來得有優勢 (純指令小 4 倍，當屬性越多優勢越明顯)<br>在傳輸的頻率極大且資料量不多的情況下，protobuf 處理資料跟結構大小都有很大的進步<br>但長資料的情況下，可能會與壓縮的資料長度相差 3 ~ 5 倍</p>
+<p>json 資料在傳輸時是沒有壓縮的，透過封包解析的情況下很容易就可以看到資訊<br>protobuf 也是有相同情況，不過格式會稍微比較不可讀一些<br>json compress 的就得拿到資料解壓才看的到，如果有心且知道壓縮方式的話，還是能看的到</p>
+<p>評估結論是，如果情境為資料傳輸為<code>高頻率</code>、<code>短資料</code>且<code>封包可能被查看</code>的情況下<br>使用 protobuf 相比 json 是可以有效提升傳輸效率</p>
+<h2 id="補充"><a href="#補充" class="headerlink" title="補充"></a>補充</h2><p>websocket 協議裏頭是有規定當一方發送 ping，另一方要盡快回應 pong，但是僅部分瀏覽器會將協定的回應資訊顯示在開發工具中(e.g. safari)，所以要確認封包有收送的話可以透過 wireshark 查看<br><img src="/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/20221026_135630.png" alt="wireshark擷取封包畫面"><br>但是協議不是強制的，所以即便有這個機制，還是建議另外實作心跳會是比較安全的做法</p>
+<hr>
+<p>websocket 傳輸的長度限制英文 2^64 所以近乎沒有限制<br>因而在實際使用中 websocket 消息長度限制只取決於服務器實現。<br>.net6 專案透過設定初始建立的緩存，可以傳輸超過 65535 長度的資料</p>
+<hr>
+<p>多語系傳輸非 ASCII 的語系 (越、泰)，會被 json 自動轉換<br>e.g：<br><code>ข้อผิดพลาดที่ไม่รู้</code> &gt;<br><code>\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14\u0E17\u0E35\u0E48\u0E44\u0E21\u0E48\u0E23\u0E39\u0E49</code></p>
+<p>因此後端專案要添加以下設定避免轉換</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> JsonSerializerOptions</span><br><span class="line">&#123;</span><br><span class="line">    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,</span><br><span class="line">    WriteIndented = <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>傳輸安全的部分<br>沒有壓縮的資料(json or protobuf)都可以透過擷取封包工具查看(wireshark)<br>而壓縮後的資料仍可透過解析的方式看到資料<br>所以，除非將傳輸資料加密，不然都不是安全的，只能增加解析資料花費的時間</p>
+<p>透過 js 解包 封包 data</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">hexStringToByteArray</span>(<span class="params">hexString: string</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (hexString.<span class="property">length</span> % <span class="number">2</span> !== <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">&quot;Must have an even number of hex digits to convert to bytes&quot;</span>;</span><br><span class="line">  &#125; <span class="comment">/* w w w.  jav  a2 s .  c o  m*/</span></span><br><span class="line">  <span class="keyword">var</span> numBytes = hexString.<span class="property">length</span> / <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">var</span> byteArray = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(numBytes);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; numBytes; i++) &#123;</span><br><span class="line">    byteArray[i] = <span class="built_in">parseInt</span>(hexString.<span class="title function_">substr</span>(i * <span class="number">2</span>, <span class="number">2</span>), <span class="number">16</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> byteArray;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> result = pako.<span class="title function_">inflateRaw</span>(<span class="title function_">hexStringToByteArray</span>(dataString), &#123;</span><br><span class="line">  <span class="attr">to</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>壓縮測試使用微軟原生的 zlib 方法 (System.IO.Compression)<br>但是因為原生的方法不處理頭尾資訊，<br>若前端丟 deflate 包含頭尾的資訊會解壓失敗<br>所以這邊前端 pako 要改用去除頭尾的壓縮方式 deflateRaw</p>
+<h2 id="參考"><a href="#參考" class="headerlink" title="參考"></a>參考</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/411440557">关于 websocket 到底要不要做心跳</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/53339153">Protobuf 比 JSON 性能更好</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/protocolbuffers/protobuf/tree/main/csharp">protobuf github</a><br><a target="_blank" rel="noopener" href="https://github.com/protobuf-net/protobuf-net">protobuf-net github</a><br><a target="_blank" rel="noopener" href="https://github.com/protobufjs/protobuf.js/">protobufjs github</a><br><a target="_blank" rel="noopener" href="http://febeacon.com/protobuf_docs_zh_cn/routes/command_line.html#javascript">protobuf.js document</a></p>
+<p><a target="_blank" rel="noopener" href="https://developers.google.com/protocol-buffers/docs/csharptutorial">Protocol Buffer Basics: C#</a><br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9cc2424eea31">vue 使用 protobuf+websocket</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40323256/article/details/123809155">Vue 中使用 protobuf</a><br><a target="_blank" rel="noopener" href="https://www.fengxianqi.com/index.php/archives/129/">如何在前端中使用 protobuf（vue 篇）</a><br><a target="_blank" rel="noopener" href="http://vuepress.wmm66.com/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/vue/vue%E9%A1%B9%E7%9B%AE%E4%B8%AD%E4%BD%BF%E7%94%A8protobuf.html#protobuf%E7%AE%80%E4%BB%8B">vue 项目中使用 protobuf</a></p>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/dotnet/standard/serialization/system-text-json/character-encoding">如何使用 System.Text.Json 自定义字符编码</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/robingaoxb/article/details/6200060">Array 的小抽屉 ArraySegment</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/mq0036/p/14711737.html">在 c#中使用 Zlib 压缩与解压的方法</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/39939869/data-format-for-system-io-compression-deflatestream">如何生成 zlib 頭尾</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/12650083/how-to-debug-websockets-with-wireshark">How to debug websockets with wireshark</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://fiddleliu0528.github.io/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/" data-id="cl9s4ps1400029yosekm23c8p" data-title="使用protobuf格式透過websocket交換資料" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/10/05/html-span%E5%85%83%E7%B4%A0%E9%9A%B1%E8%97%8F%E7%9A%84%E9%96%93%E8%B7%9D/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">html span元素隱藏的間距</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">October 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/10/26/%E4%BD%BF%E7%94%A8protobuf%E6%A0%BC%E5%BC%8F%E9%80%8F%E9%81%8Ewebsocket%E4%BA%A4%E6%8F%9B%E8%B3%87%E6%96%99/">使用protobuf格式透過websocket交換資料</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/html-span%E5%85%83%E7%B4%A0%E9%9A%B1%E8%97%8F%E7%9A%84%E9%96%93%E8%B7%9D/">html span元素隱藏的間距</a>
+          </li>
+        
+          <li>
+            <a href="/2022/10/05/%E5%9C%A8window10%E4%B8%8B%E5%81%B5%E9%8C%AFSafari/">在window10下偵錯Safari</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/28/net6-mvc-%E5%89%8D%E5%BE%8C%E7%AB%AF%E5%B0%88%E6%A1%88%E6%95%B4%E5%90%88%E9%96%8B%E7%99%BC-%E4%BD%BF%E7%94%A8vue/">.net6 mvc 前後端專案整合開發(使用vue)</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/21/%E5%BB%BA%E7%AB%8BHexo%E9%83%A8%E8%90%BD%E6%A0%BC/">建立Hexo部落格</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 Fiddle Liu<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
